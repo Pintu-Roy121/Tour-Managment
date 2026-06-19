@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import type { Types } from "mongoose";
 
 export interface IUser {
@@ -29,6 +28,6 @@ export enum IsActive {
   BLOCKED = "BLOCKED",
 }
 export interface IAuthProvider {
-  provider: string; // "Google", "Credential"
+  provider: "Google" | "Credential"; // "Google", "Credential"
   providerId: string;
 }
