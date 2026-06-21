@@ -3,6 +3,7 @@ import { Server } from "http";
 import mongoose from "mongoose";
 import app from "./app.js";
 import { envVers } from "./app/config/env.js";
+import { seedSuperAdmin } from "./app/utils/seedSuperAdmin.js";
 
 let server: Server;
 // const PORT = process.env.PORT || 5000;
@@ -24,7 +25,10 @@ const startServer = async () => {
   }
 };
 
-startServer();
+(async () => {
+  await startServer();
+  await seedSuperAdmin();
+})();
 
 process.on("unhandledRejection", () => {
   console.error("Unhandled Rejection detected. Shutting down gracefully...");

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status-codes";
 import { catchAsync } from "../../utils/catchAsync.js";
@@ -42,6 +41,27 @@ const createUser = catchAsync(
     });
   },
 );
+const updateUser = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.params.id as string;
+    // const token = req.headers.authorization;
+    // const verifiedToken = verifyToken(
+    //   token as string,
+    //   envVers.JWT_ACCESS_SECRET,
+    // ) as JwtPayload;
+    const verifiedToken = req.user;
+
+    const payload = req.body;
+    const user = await UserServices?.updateUser(userId, payload, verifiedToken);
+
+    SendResponse(res, {
+      statusCode: httpStatus.CREATED,
+      success: true,
+      message: "User updated Successfully",
+      data: user,
+    });
+  },
+);
 
 // const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
 //   try {
@@ -74,4 +94,4 @@ const getAllUsers = catchAsync(
   },
 );
 
-export const UserController = { createUser, getAllUsers };
+export const UserController = { createUser, getAllUsers, updateUser };

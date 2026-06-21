@@ -41,4 +41,6 @@
     "moduleDetection": "force",
     "skipLibCheck": true
   }
+  // if global type declaration not working add this line here
+  // "include": ["./src/app/interfaces/index.d.ts"]
 }
