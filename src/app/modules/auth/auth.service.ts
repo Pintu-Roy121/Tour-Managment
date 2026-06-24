@@ -1,9 +1,11 @@
 import bcrypt from "bcryptjs";
 import httpStatus from "http-status-codes";
-import { envVers } from "../../config/env.js";
 import AppError from "../../errorHelpers/appError.js";
-import { generateToken } from "../../utils/jwt.js";
-import type { IUser } from "../user/user.interface.js";
+import {
+  createNewAccessTokenWithRefreshToken,
+  createUserToken,
+} from "../../utils/userTokens.js";
+import { type IUser } from "../user/user.interface.js";
 import { User } from "../user/user.model.js";
 
 const credentialLogin = async (payload: Partial<IUser>) => {
@@ -23,32 +25,27 @@ const credentialLogin = async (payload: Partial<IUser>) => {
     throw new AppError(httpStatus.BAD_REQUEST, "Wrong Password!");
   }
 
-  //   const accessToken = jwt.sign(
-  //     {
-  //       userId: isUserExist._id,
-  //       email: isUserExist.email,
-  //       role: isUserExist.role,
-  //     },
-  //     "secret",
-  //     { expiresIn: "1d" },
-  //   );
-  const accessToken = generateToken(
-    {
-      userId: isUserExist._id,
-      email: isUserExist.email,
-      role: isUserExist.role,
-    },
-    envVers.JWT_ACCESS_SECRET,
-    envVers.JWT_ACCESS_EXPIRES,
-  );
+  const userToken = createUserToken(isUserExist);
+
+  const { password, ...rest } = isUserExist.toObject();
 
   return {
-    name: isUserExist.name,
-    email: isUserExist.email,
-    accessToken,
+    user: rest,
+    accessToken: userToken.accessToken,
+    refreshToken: userToken.refreshToken,
+  };
+};
+
+const getNewAccessToken = async (refreshToken: string) => {
+  const newAccessToken =
+    await createNewAccessTokenWithRefreshToken(refreshToken);
+
+  return {
+    accessToken: newAccessToken,
   };
 };
 
 export const AuthService = {
   credentialLogin,
+  getNewAccessToken,
 };
