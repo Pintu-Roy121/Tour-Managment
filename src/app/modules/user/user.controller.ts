@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status-codes";
+import type { JwtPayload } from "jsonwebtoken";
 import { catchAsync } from "../../utils/catchAsync.js";
 import { SendResponse } from "../../utils/sendResponse.js";
 import { UserServices } from "./user.service.js";
@@ -52,7 +53,11 @@ const updateUser = catchAsync(
     const verifiedToken = req.user;
 
     const payload = req.body;
-    const user = await UserServices?.updateUser(userId, payload, verifiedToken);
+    const user = await UserServices?.updateUser(
+      userId,
+      payload,
+      verifiedToken as JwtPayload,
+    );
 
     SendResponse(res, {
       statusCode: httpStatus.CREATED,
