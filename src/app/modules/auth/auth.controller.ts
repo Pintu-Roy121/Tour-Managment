@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status-codes";
 import type { JwtPayload } from "jsonwebtoken";
+import passport from "passport";
 import { envVers } from "../../config/env.js";
 import AppError from "../../errorHelpers/appError.js";
 import { catchAsync } from "../../utils/catchAsync.js";
@@ -11,16 +13,44 @@ import { AuthService } from "./auth.service.js";
 
 const credentialLogin = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const loginInfo = await AuthService.credentialLogin(req.body);
+    // const loginInfo = await AuthService.credentialLogin(req.body);
 
-    setCookie(res, loginInfo);
+    passport.authenticate("local", async (err: any, user: any, info: any) => {
+      if (err) {
+        // ❌❌❌❌❌
+        // throw new AppError(401, "Some error")
+        // next(err)
+        // return new AppError(401, err)
 
-    SendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: "Successful",
-      data: loginInfo,
-    });
+        // ✅✅✅✅
+        // return next(err)
+        // console.log("from err");
+        return next(new AppError(401, err));
+      }
+
+      if (!user) {
+        // console.log("from !user");
+        // return new AppError(401, info.message)
+        return next(new AppError(401, info.message));
+      }
+
+      const userToken = createUserToken(user);
+
+      setCookie(res, userToken);
+
+      const { password, ...rest } = user.toObject();
+
+      SendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Successful",
+        data: {
+          user: rest,
+          accessToken: userToken.accessToken,
+          refreshToken: userToken.refreshToken,
+        },
+      });
+    })(req, res, next);
   },
 );
 const getNewAccessToken = catchAsync(

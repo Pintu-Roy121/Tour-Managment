@@ -20,7 +20,7 @@ const createUser = async (payload: Partial<IUser>) => {
   );
 
   const authProvider: IAuthProvider = {
-    provider: "Credential",
+    provider: "credential",
     providerId: email as string,
   };
 
