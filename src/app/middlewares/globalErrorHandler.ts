@@ -1,29 +1,63 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { NextFunction, Request, Response } from "express";
-import { envVers } from "../config/env.js";
+import { envVars } from "../config/env.js";
 import AppError from "../errorHelpers/appError.js";
+import { handleCastError } from "../helpers/handleCastError.js";
+import { handlerDuplicateError } from "../helpers/handleDuplicateError.js";
+import { handlerValidationError } from "../helpers/handlerValidationError.js";
+import { handlerZodError } from "../helpers/handlerZodError.js";
+import type { TErrorSources } from "../interfaces/error.types.js";
 
 export const globalErrorHandler = (
   err: any,
   req: Request,
   res: Response,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: NextFunction,
 ) => {
+  if (envVars.NODE_ENV === "development") {
+    console.log(err);
+  }
+
+  let errorSources: TErrorSources[] = [];
   let statusCode = 500;
   let message = "Something Went Wrong!!";
 
-  if (err instanceof AppError) {
+  //Duplicate error
+  if (err.code === 11000) {
+    const simplifiedError = handlerDuplicateError(err);
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+  }
+  // Object ID error / Cast Error
+  else if (err.name === "CastError") {
+    const simplifiedError = handleCastError(err);
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+  } else if (err.name === "ZodError") {
+    const simplifiedError = handlerZodError(err);
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+    errorSources = simplifiedError.errorSources as TErrorSources[];
+  }
+  //Mongoose Validation Error
+  else if (err.name === "ValidationError") {
+    const simplifiedError = handlerValidationError(err);
+    statusCode = simplifiedError.statusCode;
+    errorSources = simplifiedError.errorSources as TErrorSources[];
+    message = simplifiedError.message;
+  } else if (err instanceof AppError) {
     statusCode = err.statusCode;
     message = err.message;
   } else if (err instanceof Error) {
     statusCode = 500;
     message = err.message;
   }
+
   res.status(statusCode).json({
     success: false,
     message,
-    err,
-    stack: envVers.NODE_ENV === "development" ? err.stack : null,
+    errorSources,
+    err: envVars.NODE_ENV === "development" ? err : null,
+    stack: envVars.NODE_ENV === "development" ? err.stack : null,
   });
 };

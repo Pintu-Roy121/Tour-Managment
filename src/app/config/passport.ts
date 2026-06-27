@@ -9,7 +9,7 @@ import {
 import { Strategy as LocalStrategy } from "passport-local";
 import { Role } from "../modules/user/user.interface.js";
 import { User } from "../modules/user/user.model.js";
-import { envVers } from "./env.js";
+import { envVars } from "./env.js";
 
 passport.use(
   new LocalStrategy(
@@ -54,9 +54,9 @@ passport.use(
 passport.use(
   new GoogleStrategy(
     {
-      clientID: envVers.GOOGLE_CLIENT_ID,
-      clientSecret: envVers.GOOGLE_CLIENT_SECRET,
-      callbackURL: envVers.GOOGLE_CALLBACK_URL,
+      clientID: envVars.GOOGLE_CLIENT_ID,
+      clientSecret: envVars.GOOGLE_CLIENT_SECRET,
+      callbackURL: envVars.GOOGLE_CALLBACK_URL,
     },
     async (
       accessToken: string,

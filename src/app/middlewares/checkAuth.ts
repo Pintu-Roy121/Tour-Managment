@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status-codes";
 import type { JwtPayload } from "jsonwebtoken";
-import { envVers } from "../config/env.js";
+import { envVars } from "../config/env.js";
 import AppError from "../errorHelpers/appError.js";
 import { IsActive } from "../modules/user/user.interface.js";
 import { User } from "../modules/user/user.model.js";
@@ -20,7 +20,7 @@ export const checkAuth =
       // const verifyToken = jwt.verify(accessToken, "secret");
       const verifiedToken = verifyToken(
         accessToken,
-        envVers.JWT_ACCESS_SECRET,
+        envVars.JWT_ACCESS_SECRET,
       ) as JwtPayload;
 
       const isUserExist = await User.findOne({

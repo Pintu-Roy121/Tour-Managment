@@ -65,4 +65,4 @@ const loadEnvVariables = (): TEnvVars => {
   };
 };
 
-export const envVers = loadEnvVariables();
+export const envVars = loadEnvVariables();

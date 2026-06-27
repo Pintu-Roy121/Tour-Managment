@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { envVers } from "../config/env.js";
+import { envVars } from "../config/env.js";
 import {
   Role,
   type IAuthProvider,
@@ -10,7 +10,7 @@ import { User } from "../modules/user/user.model.js";
 export const seedSuperAdmin = async () => {
   try {
     const isSuperAdminExist = await User.findOne({
-      email: envVers.SUPER_ADMIN_EMAIL,
+      email: envVars.SUPER_ADMIN_EMAIL,
     });
 
     if (isSuperAdminExist) {
@@ -19,19 +19,19 @@ export const seedSuperAdmin = async () => {
     }
 
     const hashPassword = await bcrypt.hash(
-      envVers.SUPER_ADMIN_PASSWORD,
-      Number(envVers.BCRYPT_SALT_ROUND),
+      envVars.SUPER_ADMIN_PASSWORD,
+      Number(envVars.BCRYPT_SALT_ROUND),
     );
 
     const authProvider: IAuthProvider = {
       provider: "Credential",
-      providerId: envVers.SUPER_ADMIN_EMAIL,
+      providerId: envVars.SUPER_ADMIN_EMAIL,
     };
 
     const payload: IUser = {
       name: "Super Admin",
       role: Role.SUPER_ADMIN,
-      email: envVers.SUPER_ADMIN_EMAIL,
+      email: envVars.SUPER_ADMIN_EMAIL,
       password: hashPassword,
       isVerified: true,
       auths: [authProvider],

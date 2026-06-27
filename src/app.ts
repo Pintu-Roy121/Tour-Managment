@@ -3,7 +3,7 @@ import cors from "cors";
 import express, { type Request, type Response } from "express";
 import expressSession from "express-session";
 import passport from "passport";
-import { envVers } from "./app/config/env.js";
+import { envVars } from "./app/config/env.js";
 import "./app/config/passport.js";
 import { globalErrorHandler } from "./app/middlewares/globalErrorHandler.js";
 import notFound from "./app/middlewares/notFound.js";
@@ -13,7 +13,7 @@ const app = express();
 
 app.use(
   expressSession({
-    secret: envVers.EXPRESS_SESSION_SECRET,
+    secret: envVars.EXPRESS_SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
   }),

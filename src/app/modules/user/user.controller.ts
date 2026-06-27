@@ -48,7 +48,7 @@ const updateUser = catchAsync(
     // const token = req.headers.authorization;
     // const verifiedToken = verifyToken(
     //   token as string,
-    //   envVers.JWT_ACCESS_SECRET,
+    //   envVars.JWT_ACCESS_SECRET,
     // ) as JwtPayload;
     const verifiedToken = req.user;
 

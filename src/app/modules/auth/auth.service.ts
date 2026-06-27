@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import httpStatus from "http-status-codes";
 import type { JwtPayload } from "jsonwebtoken";
-import { envVers } from "../../config/env.js";
+import { envVars } from "../../config/env.js";
 import AppError from "../../errorHelpers/appError.js";
 import { createNewAccessTokenWithRefreshToken } from "../../utils/userTokens.js";
 import { User } from "../user/user.model.js";
@@ -64,7 +64,7 @@ const resetPassword = async (
 
   user.password = await bcrypt.hash(
     newPassword,
-    Number(envVers.BCRYPT_SALT_ROUND),
+    Number(envVars.BCRYPT_SALT_ROUND),
   );
 
   user.save();

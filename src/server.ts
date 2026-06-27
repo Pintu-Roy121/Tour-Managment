@@ -2,7 +2,7 @@
 import { Server } from "http";
 import mongoose from "mongoose";
 import app from "./app.js";
-import { envVers } from "./app/config/env.js";
+import { envVars } from "./app/config/env.js";
 import { seedSuperAdmin } from "./app/utils/seedSuperAdmin.js";
 
 let server: Server;
@@ -10,15 +10,15 @@ let server: Server;
 
 const startServer = async () => {
   try {
-    const mongoUri = envVers.DB_ATLAS;
+    const mongoUri = envVars.DB_ATLAS;
     if (!mongoUri) {
       throw new Error("MongoDB URI not found in environment variables");
     }
     await mongoose.connect(mongoUri);
     console.log("Connected to MongoDB");
 
-    server = app.listen(envVers.PORT, () => {
-      console.log(`Server is running on port ${envVers.PORT}`);
+    server = app.listen(envVars.PORT, () => {
+      console.log(`Server is running on port ${envVars.PORT}`);
     });
   } catch (error) {
     console.error("Error starting server:", error);

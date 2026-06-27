@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import httpStatus from "http-status-codes";
 import type { JwtPayload } from "jsonwebtoken";
-import { envVers } from "../../config/env.js";
+import { envVars } from "../../config/env.js";
 import AppError from "../../errorHelpers/appError.js";
 import { Role, type IAuthProvider, type IUser } from "./user.interface.js";
 import { User } from "./user.model.js";
@@ -16,7 +16,7 @@ const createUser = async (payload: Partial<IUser>) => {
 
   const hasPassword = await bcrypt.hash(
     password as string,
-    Number(envVers.BCRYPT_SALT_ROUND),
+    Number(envVars.BCRYPT_SALT_ROUND),
   );
 
   const authProvider: IAuthProvider = {
@@ -62,7 +62,7 @@ const updateUser = async (
   if (payload.password) {
     payload.password = await bcrypt.hash(
       payload.password,
-      envVers.BCRYPT_SALT_ROUND,
+      envVars.BCRYPT_SALT_ROUND,
     );
   }
 

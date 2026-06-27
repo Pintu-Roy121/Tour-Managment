@@ -3,7 +3,7 @@ import type { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status-codes";
 import type { JwtPayload } from "jsonwebtoken";
 import passport from "passport";
-import { envVers } from "../../config/env.js";
+import { envVars } from "../../config/env.js";
 import AppError from "../../errorHelpers/appError.js";
 import { catchAsync } from "../../utils/catchAsync.js";
 import { SendResponse } from "../../utils/sendResponse.js";
@@ -145,7 +145,7 @@ const googleCallbackController = catchAsync(
     //   data: null,
     // });
 
-    res.redirect(`${envVers.FRONTEND_URL}/${redirectTO}`);
+    res.redirect(`${envVars.FRONTEND_URL}/${redirectTO}`);
   },
 );
 
