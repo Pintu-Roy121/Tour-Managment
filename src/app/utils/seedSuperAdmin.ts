@@ -24,7 +24,7 @@ export const seedSuperAdmin = async () => {
     );
 
     const authProvider: IAuthProvider = {
-      provider: "Credential",
+      provider: "credential",
       providerId: envVars.SUPER_ADMIN_EMAIL,
     };
 
@@ -39,7 +39,6 @@ export const seedSuperAdmin = async () => {
 
     const superAdmin = await User.create(payload);
     console.log("Super admin created successful");
-    console.log(superAdmin);
   } catch (error) {
     console.log(error);
   }
