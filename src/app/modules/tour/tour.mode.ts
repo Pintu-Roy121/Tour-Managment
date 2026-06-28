@@ -5,7 +5,7 @@ const tourTypeSchema = new Schema<ITourType>(
   {
     name: { type: String, required: true },
   },
-  { timestamps: true },
+  { timestamps: true, versionKey: false },
 );
 
 export const TourType = model<ITourType>("TourType", tourTypeSchema);
@@ -29,7 +29,7 @@ const tourSchema = new Schema<ITour>(
     division: { type: Schema.Types.ObjectId, ref: "Division", required: true },
     tourType: { type: Schema.Types.ObjectId, ref: "TourType", required: true },
   },
-  { timestamps: true },
+  { timestamps: true, versionKey: false },
 );
 
 export const Tour = model<ITour>("Tour", tourSchema);
