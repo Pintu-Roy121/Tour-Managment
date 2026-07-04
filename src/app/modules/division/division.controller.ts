@@ -1,10 +1,12 @@
 import type { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync.js";
 import { SendResponse } from "../../utils/sendResponse.js";
+import type { IDivision } from "./division.interface.js";
 import { DivisionService } from "./division.service.js";
 
 const createDivision = catchAsync(async (req: Request, res: Response) => {
-  const result = await DivisionService.createDivision(req.body);
+  const payload: IDivision = { ...req.body, thumbnail: req.file?.path };
+  const result = await DivisionService.createDivision(payload);
 
   SendResponse(res, {
     statusCode: 201,
