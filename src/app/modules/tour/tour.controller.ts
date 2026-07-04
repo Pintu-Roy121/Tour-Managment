@@ -4,7 +4,11 @@ import { SendResponse } from "../../utils/sendResponse.js";
 import { TourService } from "./tour.service.js";
 
 const createTour = catchAsync(async (req: Request, res: Response) => {
-  const result = await TourService.createTour(req.body);
+  const payload = {
+    ...req.body,
+    images: (req.files as Express.Multer.File[])?.map((file) => file.path),
+  };
+  const result = await TourService.createTour(payload);
   SendResponse(res, {
     statusCode: 201,
     success: true,
