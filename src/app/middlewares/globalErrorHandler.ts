@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { NextFunction, Request, Response } from "express";
+import { deleteImageFromCLoudinary } from "../config/cloudinary.config.js";
 import { envVars } from "../config/env.js";
 import AppError from "../errorHelpers/appError.js";
 import { handleCastError } from "../helpers/handleCastError.js";
@@ -8,7 +9,7 @@ import { handlerValidationError } from "../helpers/handlerValidationError.js";
 import { handlerZodError } from "../helpers/handlerZodError.js";
 import type { TErrorSources } from "../interfaces/error.types.js";
 
-export const globalErrorHandler = (
+export const globalErrorHandler = async (
   err: any,
   req: Request,
   res: Response,
@@ -16,6 +17,18 @@ export const globalErrorHandler = (
 ) => {
   if (envVars.NODE_ENV === "development") {
     console.log(err);
+  }
+
+  if (req.file) {
+    await deleteImageFromCLoudinary(req.file.path);
+  }
+
+  if (req.files && Array.isArray(req.files) && req.files.length) {
+    const imageUrls = (req.files as Express.Multer.File[]).map(
+      (file) => file.path,
+    );
+
+    await Promise.all(imageUrls.map((url) => deleteImageFromCLoudinary(url)));
   }
 
   let errorSources: TErrorSources[] = [];

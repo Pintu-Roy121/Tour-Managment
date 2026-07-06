@@ -25,7 +25,7 @@ const credentialLogin = catchAsync(
         // ✅✅✅✅
         // return next(err)
         // console.log("from err");
-        return next(new AppError(401, err));
+        return next(new AppError(err.statusCode || 401, err.message));
       }
 
       if (!user) {
@@ -100,22 +100,65 @@ const logout = catchAsync(
     });
   },
 );
-const resetPassword = catchAsync(
+const changePassword = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const decodedToken = req.user;
     const newPassword = req.body.newPassword;
     const oldPassword = req.body.oldPassword;
+    const decodedToken = req.user;
 
-    await AuthService.resetPassword(
-      newPassword,
+    await AuthService.changePassword(
       oldPassword,
+      newPassword,
       decodedToken as JwtPayload,
     );
 
     SendResponse(res, {
-      statusCode: httpStatus.OK,
       success: true,
-      message: "Password changed successfully!",
+      statusCode: httpStatus.OK,
+      message: "Password Changed Successfully",
+      data: null,
+    });
+  },
+);
+const resetPassword = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const decodedToken = req.user;
+
+    await AuthService.resetPassword(req.body, decodedToken as JwtPayload);
+
+    SendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Password Changed Successfully",
+      data: null,
+    });
+  },
+);
+const setPassword = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const decodedToken = req.user as JwtPayload;
+    const { password } = req.body;
+
+    await AuthService.setPassword(decodedToken.userId, password);
+
+    SendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Password Changed Successfully",
+      data: null,
+    });
+  },
+);
+const forgotPassword = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { email } = req.body;
+
+    await AuthService.forgotPassword(email);
+
+    SendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Email Sent Successfully",
       data: null,
     });
   },
@@ -152,7 +195,10 @@ const googleCallbackController = catchAsync(
 export const AuthController = {
   credentialLogin,
   getNewAccessToken,
+  changePassword,
+  setPassword,
   resetPassword,
+  forgotPassword,
   logout,
   googleCallbackController,
 };

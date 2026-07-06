@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import httpStatus from "http-status-codes";
 import type { JwtPayload } from "jsonwebtoken";
+import { deleteImageFromCLoudinary } from "../../config/cloudinary.config.js";
 import { envVars } from "../../config/env.js";
 import AppError from "../../errorHelpers/appError.js";
 import { Role, type IAuthProvider, type IUser } from "./user.interface.js";
@@ -70,6 +71,9 @@ const updateUser = async (
     new: true,
     runValidators: true,
   });
+  if (payload.picture && isUserExist.picture) {
+    await deleteImageFromCLoudinary(isUserExist.picture);
+  }
 
   return newUpdatedUser;
 };
@@ -85,4 +89,24 @@ const getAllUsers = async () => {
   };
 };
 
-export const UserServices = { createUser, getAllUsers, updateUser };
+const getSingleUser = async (id: string) => {
+  const user = await User.findById(id).select("-password");
+  return {
+    data: user,
+  };
+};
+
+const getMe = async (userId: string) => {
+  const user = await User.findById(userId).select("-password");
+  return {
+    data: user,
+  };
+};
+
+export const UserServices = {
+  createUser,
+  getAllUsers,
+  updateUser,
+  getMe,
+  getSingleUser,
+};

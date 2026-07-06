@@ -1,3 +1,4 @@
+import { deleteImageFromCLoudinary } from "../../config/cloudinary.config.js";
 import type { IDivision } from "./division.interface.js";
 import { Division } from "./division.mode.js";
 
@@ -54,6 +55,10 @@ const updateDivision = async (id: string, payload: Partial<IDivision>) => {
     new: true,
     runValidators: true,
   });
+
+  if (payload.thumbnail && existingDivision.thumbnail) {
+    await deleteImageFromCLoudinary(existingDivision.thumbnail);
+  }
 
   return updatedDivision;
 };

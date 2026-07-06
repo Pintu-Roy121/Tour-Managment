@@ -19,7 +19,8 @@ const createDivision = catchAsync(async (req: Request, res: Response) => {
 const updateDivision = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const id = req.params.id as string;
-    const result = await DivisionService.updateDivision(id, req.body);
+    const payload: IDivision = { ...req.body, thumbnail: req.file?.path };
+    const result = await DivisionService.updateDivision(id, payload);
     SendResponse(res, {
       statusCode: 200,
       success: true,

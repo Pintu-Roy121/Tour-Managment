@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from "http-status-codes";
 import AppError from "../../errorHelpers/appError.js";
+import { getTransactionId } from "../../utils/getTransactionId.js";
 import { PAYMENT_STATUS } from "../payment/payment.interface.js";
 import { Payment } from "../payment/payment.model.js";
 import type { ISSLCommerz } from "../sslCommerz/sslCommerz.interface.js";
@@ -9,10 +10,6 @@ import { Tour } from "../tour/tour.model.js";
 import { User } from "../user/user.model.js";
 import { BOOKING_STATUS, type IBooking } from "./booking.interface.js";
 import { Booking } from "./booking.mode.js";
-
-const getTransactionId = () => {
-  return `tran_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-};
 
 const createBooking = async (payload: Partial<IBooking>, userId: string) => {
   const transactionId = getTransactionId();

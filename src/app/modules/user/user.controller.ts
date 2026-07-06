@@ -3,6 +3,7 @@ import httpStatus from "http-status-codes";
 import type { JwtPayload } from "jsonwebtoken";
 import { catchAsync } from "../../utils/catchAsync.js";
 import { SendResponse } from "../../utils/sendResponse.js";
+import type { IUser } from "./user.interface.js";
 import { UserServices } from "./user.service.js";
 
 // const createUser = async (req: Request, res: Response, next: NextFunction) => {
@@ -27,7 +28,8 @@ import { UserServices } from "./user.service.js";
 
 const createUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const user = await UserServices?.createUser(req.body);
+    const payload: IUser = { ...req.body, picture: req.file?.path };
+    const user = await UserServices?.createUser(payload);
 
     // res.status(httpStatus.OK).json({
     //   message: "User created successfully",
@@ -51,8 +53,8 @@ const updateUser = catchAsync(
     //   envVars.JWT_ACCESS_SECRET,
     // ) as JwtPayload;
     const verifiedToken = req.user;
+    const payload: IUser = { ...req.body, picture: req.file?.path };
 
-    const payload = req.body;
     const user = await UserServices?.updateUser(
       userId,
       payload,
@@ -99,4 +101,42 @@ const getAllUsers = catchAsync(
   },
 );
 
-export const UserController = { createUser, getAllUsers, updateUser };
+const getSingleUser = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params?.id;
+    const result = await UserServices.getSingleUser(id as string);
+    SendResponse(res, {
+      success: true,
+      statusCode: httpStatus.CREATED,
+      message: "User Retrieved Successfully",
+      data: result.data,
+    });
+  },
+);
+
+const getMe = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const decodedToken = req.user as JwtPayload;
+    const result = await UserServices.getMe(decodedToken.userId);
+
+    // res.status(httpStatus.OK).json({
+    //     success: true,
+    //     message: "All Users Retrieved Successfully",
+    //     data: users
+    // })
+    SendResponse(res, {
+      success: true,
+      statusCode: httpStatus.CREATED,
+      message: "Your profile Retrieved Successfully",
+      data: result.data,
+    });
+  },
+);
+
+export const UserController = {
+  createUser,
+  getAllUsers,
+  updateUser,
+  getMe,
+  getSingleUser,
+};
