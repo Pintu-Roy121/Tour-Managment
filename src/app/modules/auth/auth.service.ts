@@ -106,7 +106,7 @@ const forgotPassword = async (email: string) => {
   sendEmail({
     to: isUserExist.email,
     subject: "Password Reset",
-    templateName: "forgetPassword",
+    templateName: "forgotPassword",
     templateData: {
       name: isUserExist.name,
       resetUILink,

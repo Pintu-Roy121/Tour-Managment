@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import ejs from "ejs";
+import { fileURLToPath } from "node:url";
 import nodemailer from "nodemailer";
 import path from "path";
 import { envVars } from "../config/env.js";
@@ -16,6 +17,9 @@ interface SendEmailOptions {
     contentType: string;
   }[];
 }
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const transporter = nodemailer.createTransport({
   // port: envVars.EMAIL_SENDER.SMTP_PORT,
