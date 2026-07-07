@@ -1,10 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from "http-status-codes";
 import AppError from "../../errorHelpers/appError.js";
+import { generatePdf, type IInvoiceData } from "../../utils/invoice.js";
+import { sendEmail } from "../../utils/sendEmail.js";
 import { BOOKING_STATUS } from "../booking/booking.interface.js";
 import { Booking } from "../booking/booking.mode.js";
 import type { ISSLCommerz } from "../sslCommerz/sslCommerz.interface.js";
 import { SSLService } from "../sslCommerz/sslCommerz.service.js";
+import type { ITour } from "../tour/tour.interface.js";
+import type { IUser } from "../user/user.interface.js";
 import { PAYMENT_STATUS } from "./payment.interface.js";
 import { Payment } from "./payment.model.js";
 
@@ -57,11 +61,46 @@ const successPayment = async (query: Record<string, string>) => {
       { new: true, runValidators: true, session: session },
     );
 
-    await Booking.findByIdAndUpdate(
+    if (!updatedPayment) {
+      throw new AppError(httpStatus.NOT_FOUND, "Payment Not Found");
+    }
+
+    const updatedBooking = await Booking.findByIdAndUpdate(
       updatedPayment?.booking,
       { status: BOOKING_STATUS.COMPLETE },
       { runValidators: true, session },
-    );
+    )
+      .populate("tour", "title")
+      .populate("user", "name email");
+
+    if (!updatedBooking) {
+      throw new AppError(httpStatus.NOT_FOUND, "Booking Not Found");
+    }
+
+    const invoiceData: IInvoiceData = {
+      bookingDate: updatedBooking.createdAt as Date,
+      guestCount: updatedBooking.guestCount,
+      totalAmount: updatedPayment.amount,
+      tourTitle: (updatedBooking.tour as unknown as ITour).title,
+      transactionId: updatedPayment.transactionId,
+      userName: (updatedBooking.user as unknown as IUser).name,
+    };
+
+    const pdfBuffer = await generatePdf(invoiceData);
+
+    await sendEmail({
+      to: (updatedBooking.user as unknown as IUser).email,
+      subject: "Your Booking Invoice",
+      templateName: "invoice",
+      templateData: invoiceData,
+      attachments: [
+        {
+          filename: "invoice.pdf",
+          content: pdfBuffer,
+          contentType: "application/pdf",
+        },
+      ],
+    });
 
     await session.commitTransaction(); //transaction
     session.endSession();
