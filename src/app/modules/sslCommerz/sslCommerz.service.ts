@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import httpStatus from "http-status-codes";
 import { envVars } from "../../config/env.js";
 import AppError from "../../errorHelpers/appError.js";
+import { Payment } from "../payment/payment.model.js";
 import type { ISSLCommerz } from "./sslCommerz.interface.js";
 
 const sslPaymentInit = async (payload: ISSLCommerz) => {
@@ -46,13 +48,31 @@ const sslPaymentInit = async (payload: ISSLCommerz) => {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
     });
     return response.data;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.log("Payment Error Occured", error);
     throw new AppError(httpStatus.BAD_REQUEST, error.message);
   }
 };
 
+const validatePayment = async (payload: any) => {
+  try {
+    const response = await axios({
+      method: "GET",
+      url: `${envVars.SSL.SSL_VALIDATION_API}?val_id=${payload.val_id}&store_id=${envVars.SSL.SSL_STORE_ID}&store_passwd=${envVars.SSL.SSL_STORE_PASS}`,
+    });
+
+    await Payment.updateOne(
+      { transactionId: payload.tran_id },
+      { paymentGatewayData: response.data },
+      { runValidators: true },
+    );
+  } catch (error: any) {
+    console.log(error);
+    throw new AppError(401, `Payment Validation Error, ${error.message}`);
+  }
+};
+
 export const SSLService = {
   sslPaymentInit,
+  validatePayment,
 };

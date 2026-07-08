@@ -29,6 +29,8 @@ interface TEnvVars {
     SSL_SUCCESS_BACKEND_URL: string;
     SSL_FAIL_BACKEND_URL: string;
     SSL_CANCEL_BACKEND_URL: string;
+    SSL_VALIDATION_API: string;
+    SSL_IPN_URL: string;
   };
   CLOUDINARY: {
     CLOUDINARY_CLOUD_NAME: string;
@@ -86,6 +88,8 @@ const loadEnvVariables = (): TEnvVars => {
     "REDIS_PORT",
     "REDIS_USERNAME",
     "REDIS_PASSWORD",
+    "SSL_VALIDATION_API",
+    "SSL_IPN_URL",
   ];
 
   const missing = requireEnvVariables.filter((key) => !process.env[key]);
@@ -124,6 +128,8 @@ const loadEnvVariables = (): TEnvVars => {
       SSL_SUCCESS_BACKEND_URL: process.env.SSL_SUCCESS_BACKEND_URL as string,
       SSL_FAIL_BACKEND_URL: process.env.SSL_FAIL_BACKEND_URL as string,
       SSL_CANCEL_BACKEND_URL: process.env.SSL_CANCEL_BACKEND_URL as string,
+      SSL_VALIDATION_API: process.env.SSL_VALIDATION_API as string,
+      SSL_IPN_URL: process.env.SSL_IPN_URL as string,
     },
     CLOUDINARY: {
       CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME as string,
