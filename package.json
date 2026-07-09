@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "tsx watch ./src/server.ts",
     "build": "tsc",
-    "start": "ts-node-dev --respawn --transpile-only --esm ./src/server.ts",
+    "start": "node ./dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "npx eslint ./src"
   },
@@ -40,7 +40,7 @@
     "@types/pdfkit": "^0.17.6",
     "axios": "^1.18.1",
     "bcryptjs": "^3.0.3",
-    "cloudinary": "^2.10.0",
+    "cloudinary": "^1.41.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",

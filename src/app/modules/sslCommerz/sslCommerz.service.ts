@@ -58,7 +58,7 @@ const validatePayment = async (payload: any) => {
   try {
     const response = await axios({
       method: "GET",
-      url: `${envVars.SSL.SSL_VALIDATION_API}?val_id=${payload.val_id}&store_id=${envVars.SSL.SSL_STORE_ID}&store_passwd=${envVars.SSL.SSL_STORE_PASS}`,
+      url: `${envVars.SSL.SSL_PAYMENT_VALIDATION_API}?val_id=${payload.val_id}&store_id=${envVars.SSL.SSL_STORE_ID}&store_passwd=${envVars.SSL.SSL_STORE_PASS}`,
     });
 
     await Payment.updateOne(
