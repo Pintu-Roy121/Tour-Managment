@@ -120,7 +120,7 @@ const successPayment = async (query: Record<string, string>) => {
       pdfBuffer,
       "invoice",
     );
-    console.log(cloudinaryResult);
+
     if (!cloudinaryResult) {
       throw new AppError(401, "Upload Url not found!");
     }

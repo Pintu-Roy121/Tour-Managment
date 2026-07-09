@@ -17,7 +17,7 @@ const sslPaymentInit = async (payload: ISSLCommerz) => {
       success_url: `${envVars.SSL.SSL_SUCCESS_BACKEND_URL}?transactionId=${payload.transactionId}&amount=${payload.amount}&status=success`,
       fail_url: `${envVars.SSL.SSL_FAIL_BACKEND_URL}?transactionId=${payload.transactionId}&amount=${payload.amount}&status=fail`,
       cancel_url: `${envVars.SSL.SSL_CANCEL_BACKEND_URL}?transactionId=${payload.transactionId}&amount=${payload.amount}&status=cancel`,
-      // ipn_url: "http://localhost:3030/ipn",
+      ipn_url: envVars.SSL.SSL_IPN_URL,
       shipping_method: "N/A",
       product_name: "Tour",
       product_category: "Service",
@@ -47,9 +47,10 @@ const sslPaymentInit = async (payload: ISSLCommerz) => {
       data: data,
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
     });
+
     return response.data;
   } catch (error: any) {
-    console.log("Payment Error Occured", error);
+    console.log("Payment Error Occurred", error);
     throw new AppError(httpStatus.BAD_REQUEST, error.message);
   }
 };
@@ -60,7 +61,6 @@ const validatePayment = async (payload: any) => {
       method: "GET",
       url: `${envVars.SSL.SSL_PAYMENT_VALIDATION_API}?val_id=${payload.val_id}&store_id=${envVars.SSL.SSL_STORE_ID}&store_passwd=${envVars.SSL.SSL_STORE_PASS}`,
     });
-
     await Payment.updateOne(
       { transactionId: payload.tran_id },
       { paymentGatewayData: response.data },

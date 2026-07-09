@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import fs from "fs";
 import PDFDocument from "pdfkit";
 import AppError from "../errorHelpers/appError.js";
 
@@ -57,7 +56,8 @@ export const generateInvoice = async (
       doc.on("end", () => resolve(Buffer.concat(buffer)));
       doc.on("error", (err) => reject(err));
 
-      doc.pipe(fs.createWriteStream(outputPath));
+      // Don't write to file system on serverless (Vercel has read-only fs)
+      // doc.pipe(fs.createWriteStream(outputPath));
 
       // ==========================
       // Header
